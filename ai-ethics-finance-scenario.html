@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Credit Algorithm | AI Ethics Scenario</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Space Grotesk', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                var(--bg-primary);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .progress-container {
+            margin-bottom: 40px;
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            border-radius: 2px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .scene {
+            display: none;
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .scene.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.5;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .narrative {
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--accent);
+            padding: 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 24px 0;
+        }
+
+        .narrative p {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+        }
+
+        .narrative p + p {
+            margin-top: 16px;
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .choice-btn {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 20px 24px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--accent);
+            transform: scaleY(0);
+            transition: transform 0.2s ease;
+        }
+
+        .choice-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--accent);
+            transform: translateX(8px);
+        }
+
+        .choice-btn:hover::before {
+            transform: scaleY(1);
+        }
+
+        .choice-btn:active {
+            transform: translateX(8px) scale(0.99);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .badge.positive {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge.negative {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .badge.neutral {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .stat {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .stat-value.good { color: var(--success); }
+        .stat-value.warn { color: var(--warning); }
+        .stat-value.bad { color: var(--danger); }
+
+        .score-display {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 16px;
+            margin: 24px 0;
+            border: 1px solid var(--border);
+        }
+
+        .score-number {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-light), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .score-label {
+            color: var(--text-secondary);
+            margin-top: 8px;
+            font-size: 1.1rem;
+        }
+
+        .ending-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .ending-badge.best { background: var(--success); color: var(--bg-primary); }
+        .ending-badge.good { background: var(--accent); color: white; }
+        .ending-badge.mixed { background: var(--warning); color: var(--bg-primary); }
+        .ending-badge.bad { background: var(--danger); color: white; }
+
+        .reflection {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .reflection h3 {
+            font-size: 1rem;
+            color: var(--accent-light);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .reflection ul {
+            list-style: none;
+        }
+
+        .reflection li {
+            color: var(--text-secondary);
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .reflection li::before {
+            content: '?';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+            border: none;
+            width: 100%;
+            justify-content: center;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+
+        .restart-btn:hover {
+            transform: none;
+            opacity: 0.9;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .btn-group .choice-btn {
+            flex: 1;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .share-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .share-btn:hover {
+            transform: none;
+            opacity: 0.9;
+        }
+
+        /* Share Card Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid var(--border);
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: var(--text-primary);
+        }
+
+        .share-card-preview {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .share-card-preview canvas {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .share-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .share-actions button {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .download-btn {
+            background: var(--accent);
+            color: white;
+        }
+
+        .download-btn:hover {
+            background: var(--accent-light);
+        }
+
+        .copy-btn {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border) !important;
+        }
+
+        .copy-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--accent) !important;
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+            color: white;
+            border-color: var(--success) !important;
+        }
+
+        /* Name input */
+        .name-input-group {
+            margin: 24px 0;
+        }
+
+        .name-input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .name-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+        }
+
+        .name-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .name-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .name-display {
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+
+        .quote {
+            font-style: italic;
+            color: var(--text-muted);
+            border-left: 2px solid var(--accent);
+            padding-left: 16px;
+            margin: 20px 0;
+        }
+
+        .key-points {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .key-points li {
+            padding: 12px 0;
+            padding-left: 28px;
+            position: relative;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .key-points li:last-child {
+            border-bottom: none;
+        }
+
+        .key-points li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 18px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .key-points strong {
+            color: var(--text-primary);
+        }
+
+        .references {
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+        }
+
+        .references h2 {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .ref-item {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            line-height: 1.7;
+            padding-left: 20px;
+            text-indent: -20px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .tension-meter {
+            margin: 20px 0;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .tension-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .tension-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .tension-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .tension-fill.low { background: var(--success); width: 30%; }
+        .tension-fill.medium { background: var(--warning); width: 60%; }
+        .tension-fill.high { background: var(--danger); width: 90%; }
+
+        @media (max-width: 600px) {
+            .container { padding: 40px 16px; }
+            .card { padding: 24px; }
+            .stat-grid { grid-template-columns: 1fr; }
+            .score-number { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">Interactive Scenario</div>
+            <h1>The Credit Algorithm</h1>
+            <p class="tagline">Navigate ethical dilemmas in AI-powered finance</p>
+        </header>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- INTRO -->
+        <div class="scene active" id="intro">
+            <div class="card">
+                <h2>AI in Financial Services</h2>
+                <p>Artificial intelligence is reshaping how financial institutions make decisions. From loan approvals to fraud detection, algorithms now influence outcomes that affect millions of lives.</p>
+
+                <ul class="key-points">
+                    <li><strong>Bias:</strong> ML systems trained on historical data can perpetuate discrimination. Research shows minority applicants face denial rates 2x higher than comparable applicants.</li>
+                    <li><strong>Transparency:</strong> Many AI models are "black boxes" — regulators and consumers cannot understand how decisions are made.</li>
+                    <li><strong>Accountability:</strong> The EU AI Act (2024) classifies credit scoring as high-risk AI, with fines up to 7% of global turnover.</li>
+                    <li><strong>Privacy:</strong> GDPR grants individuals the right to contest automated decisions that significantly affect them.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>Your Role</h2>
+                <div class="narrative">
+                    <p>You are <strong>the</strong> senior data scientist at <strong>NovaCred Financial</strong>. Your team has built "CreditVision AI" — a system that processes loan applications 50x faster than human underwriters.</p>
+                    <p>The board wants to launch next month. During final testing, you run a fairness audit and discover something troubling...</p>
+                </div>
+
+                <div class="name-input-group">
+                    <label for="playerName">Enter your name (optional)</label>
+                    <input type="text" id="playerName" class="name-input" placeholder="Your name for the share card..." maxlength="30">
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="startScenario()">Begin scenario</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCENE 1: THE DISCOVERY -->
+        <div class="scene" id="scene1">
+            <div class="card">
+                <h2>The Discovery</h2>
+                <div class="narrative">
+                    <p>Your fairness metrics reveal a pattern: the model denies applications from certain postcodes at <strong>2.3x the rate</strong> of similar applicants elsewhere. These postcodes correlate strongly with minority populations.</p>
+                    <p>The model doesn't use race directly — that's illegal. But postcode acts as a <strong>proxy variable</strong>, producing discriminatory outcomes through seemingly neutral data.</p>
+                    <p>The bias originates from historical lending data where human underwriters made discriminatory decisions. The AI has learned to replicate this behaviour.</p>
+                </div>
+
+                <p class="quote">"Differences in mortgage approval between minority and majority groups stem not just from bias, but from minority groups having less data in their credit histories — leading to less accurate predictions."<br>— Blattner & Nelson, Stanford (2021)</p>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('s1_report')">Report findings to management immediately</button>
+                    <button class="choice-btn" onclick="goToScene('s1_fix')">Remove the variable quietly and retrain overnight</button>
+                    <button class="choice-btn" onclick="goToScene('s1_proceed')">Document the issue but proceed — overall accuracy is high</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATH A: REPORT TO MANAGEMENT -->
+        <div class="scene" id="s1_report">
+            <div class="card">
+                <span class="badge positive">Ethical choice</span>
+                <h2>Escalation</h2>
+                <div class="narrative">
+                    <p>You present your findings to Sarah Chen, your manager. She listens carefully.</p>
+                    <p>"This is serious. But the CEO promised the board we'd launch next month — delaying could affect our Series B."</p>
+                    <p>She offers two paths: escalate to the Chief Risk Officer and potentially delay, or implement a "fairness adjustment" that overrides model decisions for flagged postcodes to achieve statistical parity.</p>
+                    <p>The adjustment would make the numbers look equal without fixing the underlying problem.</p>
+                </div>
+
+                <div class="tension-meter">
+                    <div class="tension-label">Workplace tension</div>
+                    <div class="tension-bar"><div class="tension-fill medium"></div></div>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('s2_escalate')">Escalate to Chief Risk Officer</button>
+                    <button class="choice-btn" onclick="goToScene('s2_adjust')">Accept the fairness adjustment</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATH A2: ESCALATE TO CRO -->
+        <div class="scene" id="s2_escalate">
+            <div class="card">
+                <span class="badge positive">Strong ethics</span>
+                <h2>The Risk Committee</h2>
+                <div class="narrative">
+                    <p>Marcus Webb, Chief Risk Officer, reviews your analysis.</p>
+                    <p>"Under the EU AI Act, credit scoring is high-risk AI. We need bias audits and explainability. Deploying a model with known fairness issues exposes us to fines up to €35 million."</p>
+                    <p>He recommends a 6-week delay. The board reluctantly agrees.</p>
+                    <p>But then CEO Kiana Samadpour calls you directly...</p>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('s3_ceo_meeting')">Take the call</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: CEO PRESSURE SCENE -->
+        <div class="scene" id="s3_ceo_meeting">
+            <div class="card">
+                <span class="badge neutral">Pressure point</span>
+                <h2>The CEO's Call</h2>
+                <div class="narrative">
+                    <p>"I understand you flagged some concerns about CreditVision. I appreciate that — really. But I need you to understand the bigger picture."</p>
+                    <p>Kiana's tone is measured but firm. "We have €40 million in Series B funding contingent on this launch. That's 200 jobs. If we delay, TrustScore — our main competitor — launches first and we lose market position permanently."</p>
+                    <p>She pauses. "Marcus wants 6 weeks. I'm asking if there's a way to launch in 2 weeks with a 'phase one' that excludes the problematic postcodes entirely. We serve the rest of the market now, fix the bias issue properly, then expand."</p>
+                    <p>It's a compromise — not perfect, but pragmatic. Those postcodes would simply get human review instead of AI decisions.</p>
+                </div>
+
+                <div class="tension-meter">
+                    <div class="tension-label">Workplace tension</div>
+                    <div class="tension-bar"><div class="tension-fill high"></div></div>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('s3_accept_ceo')">Accept the phased approach — it protects affected groups while meeting business needs</button>
+                    <button class="choice-btn" onclick="goToScene('s3_reject_ceo')">Decline — partial exclusion still means launching a biased system</button>
+                    <button class="choice-btn" onclick="goToScene('s3_counter_ceo')">Counter-propose: 3 weeks with external ethics audit as condition</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CEO PATH: ACCEPT -->
+        <div class="scene" id="s3_accept_ceo">
+            <div class="card">
+                <span class="badge neutral">Pragmatic choice</span>
+                <h2>The Phased Launch</h2>
+                <div class="narrative">
+                    <p>The phased approach launches. Applications from flagged postcodes route to human underwriters while the AI handles everything else.</p>
+                    <p>Two months later, the bias mitigation is complete. The full system rolls out with proper fairness constraints. Series B closes successfully.</p>
+                    <p>But a journalist from the Financial Times has obtained internal emails about the "postcode exclusion" strategy. The headline reads: <strong>"NovaCred's AI: Too Biased for Some Neighbourhoods"</strong></p>
+                    <p>The story frames the phased approach as redlining by another name — excluding certain communities from automated efficiency while others benefit.</p>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('end_pragmatic')">Continue to outcome</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CEO PATH: REJECT -->
+        <div class="scene" id="s3_reject_ceo">
+            <div class="card">
+                <span class="badge positive">Principled stand</span>
+                <h2>Standing Firm</h2>
+                <div class="narrative">
+                    <p>"I appreciate the creative thinking, but I can't sign off on launching a system we know has problems — even partially. If something goes wrong, I'm the one who validated it."</p>
+                    <p>There's a long silence. "I respect that. I don't like it, but I respect it."</p>
+                    <p>The 6-week delay proceeds. Series B negotiations are tense — two investors pull out, but the round closes at a lower valuation. NovaCred survives.</p>
+                    <p>When CreditVision finally launches, it's held up as an example of responsible AI development. The delay becomes a selling point: "We took the time to get it right."</p>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('end_best')">Continue to outcome</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CEO PATH: COUNTER -->
+        <div class="scene" id="s3_counter_ceo">
+            <div class="card">
+                <span class="badge positive">Negotiated solution</span>
+                <h2>The Counter-Offer</h2>
+                <div class="narrative">
+                    <p>"What if we meet in the middle? Three weeks — enough time to implement basic fairness constraints and get an external ethics auditor to validate our approach. We launch with their preliminary sign-off and full certification follows."</p>
+                    <p>Kiana considers this. "An external auditor actually helps with investor confidence. Who did you have in mind?"</p>
+                    <p>You suggest the Alan Turing Institute's AI ethics team. Their involvement would provide credibility and catch issues your team might miss.</p>
+                    <p>"Three weeks, external audit, and you personally present the fairness methodology to the board before launch. Deal?"</p>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('end_negotiated')">Accept the deal</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATH A2: FAIRNESS ADJUSTMENT -->
+        <div class="scene" id="s2_adjust">
+            <div class="card">
+                <span class="badge neutral">Compromise</span>
+                <h2>Statistical Parity</h2>
+                <div class="narrative">
+                    <p>The fairness adjustment launches. Approval rates are now equal across demographics. Regulators are satisfied with the metrics.</p>
+                    <p>Six months later, you're reviewing default data and notice something troubling: applicants approved through the adjustment have a <strong>23% higher default rate</strong>.</p>
+                    <p>The override is approving people who genuinely can't afford the loans. They're taking on debt, missing payments, damaging their credit scores. Some face collection actions.</p>
+                    <p>You've achieved statistical fairness while creating real financial harm.</p>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('s3_report_harm')">Report the unintended harm and push to fix the underlying model</button>
+                    <button class="choice-btn" onclick="goToScene('s3_ignore_harm')">The metrics look good — this might just be noise in the data</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: REPORT HARM FROM ADJUSTMENT -->
+        <div class="scene" id="s3_report_harm">
+            <div class="card">
+                <span class="badge positive">Course correction</span>
+                <h2>Raising the Alarm</h2>
+                <div class="narrative">
+                    <p>You present the default data to Sarah and Marcus. The pattern is clear: the fairness adjustment is hurting the people it was meant to help.</p>
+                    <p>"We need to pause the adjustment and rebuild the model properly," you argue. "Real fairness means accurate predictions for everyone, not just equal approval rates."</p>
+                    <p>Marcus agrees. "This is exactly the kind of 'fairness theater' regulators are starting to crack down on. Better we fix it now than face enforcement later."</p>
+                    <p>The adjustment is rolled back. A 4-week project begins to implement proper bias mitigation. Some applicants who would have been approved now aren't — but those who are approved can actually afford their loans.</p>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('end_course_correct')">Continue to outcome</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: IGNORE HARM -->
+        <div class="scene" id="s3_ignore_harm">
+            <div class="card">
+                <span class="badge negative">Wilful blindness</span>
+                <h2>Looking Away</h2>
+                <div class="narrative">
+                    <p>You convince yourself the elevated defaults might be a statistical anomaly. The fairness metrics look good. No one is complaining.</p>
+                    <p>Eight months later, a consumer advocacy group publishes a report: <strong>"Approved to Fail: How NovaCred's AI Sets Minority Borrowers Up for Default"</strong></p>
+                    <p>They've analysed public data and found the pattern you noticed. The report goes viral. The FCA opens an investigation not just into bias, but into whether NovaCred knowingly caused consumer harm.</p>
+                    <p>Your default analysis from six months ago is discovered during document review. You saw this coming and said nothing.</p>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('end_complicit')">Continue to outcome</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATH B: FIX QUIETLY -->
+        <div class="scene" id="s1_fix">
+            <div class="card">
+                <span class="badge negative">Risky choice</span>
+                <h2>The Midnight Fix</h2>
+                <div class="narrative">
+                    <p>You remove postcode from the feature set and retrain the model at 2am.</p>
+                    <p>The next morning, Jamie from data engineering messages you: "Hey — noticed a new model version uploaded overnight. The feature set changed. Everything okay?"</p>
+                    <p>Jamie has already compared versions and spotted the missing variable. Model governance requires all changes to be logged and approved. Your undocumented change has created an audit problem.</p>
+                </div>
+
+                <div class="tension-meter">
+                    <div class="tension-label">Workplace tension</div>
+                    <div class="tension-bar"><div class="tension-fill high"></div></div>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('s2_confess')">Come clean and document the change properly</button>
+                    <button class="choice-btn" onclick="goToScene('s2_revert')">Say it was a test and revert to the original</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATH B2: CONFESS -->
+        <div class="scene" id="s2_confess">
+            <div class="card">
+                <span class="badge positive">Recovery</span>
+                <h2>Coming Clean</h2>
+                <div class="narrative">
+                    <p>You tell Jamie everything — the bias, your panic, the midnight retrain.</p>
+                    <p>"Look, I get it," Jamie says. "But we need to do this right. Let's document the issue properly and present to governance. They need to know."</p>
+                    <p>The committee is frustrated by the process violation but ultimately commends you for identifying a critical issue. Launch delays 4 weeks. The model deploys with proper safeguards.</p>
+                    <p>You receive a formal warning about the undocumented change, but your honesty is noted. Jamie becomes a trusted ally.</p>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('end_good')">Continue to outcome</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATH B2: REVERT -->
+        <div class="scene" id="s2_revert">
+            <div class="card">
+                <span class="badge negative">Cover-up</span>
+                <h2>Back to Original</h2>
+                <div class="narrative">
+                    <p>You tell Jamie it was just testing and revert to the biased model. Launch proceeds on schedule.</p>
+                    <p>Eight months later: a class-action lawsuit alleges racial discrimination. Consumer groups have analysed public data showing significant disparities.</p>
+                    <p>During legal discovery, your fairness analysis surfaces. Worse — version control logs show the midnight retrain and revert. Evidence you knew about the problem and deployed anyway.</p>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('end_bad')">Continue to outcome</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATH C: PROCEED ANYWAY -->
+        <div class="scene" id="s1_proceed">
+            <div class="card">
+                <span class="badge negative">Problematic choice</span>
+                <h2>Moving Forward</h2>
+                <div class="narrative">
+                    <p>You write up the fairness analysis, bury it in a technical appendix, and greenlight deployment.</p>
+                    <p>Three months later, CreditVision AI has processed 50,000 applications. Efficiency is up, defaults are down, the board is happy.</p>
+                    <p>Then Legal forwards you an email: <strong>"URGENT: Regulatory Inquiry"</strong></p>
+                    <p>The FCA has received complaints from consumer advocacy groups. They're requesting all model documentation, training data details, and fairness assessments. Your buried report is about to surface.</p>
+                </div>
+
+                <div class="tension-meter">
+                    <div class="tension-label">Workplace tension</div>
+                    <div class="tension-bar"><div class="tension-fill high"></div></div>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('s2_disclose')">Proactively disclose the report to Legal</button>
+                    <button class="choice-btn" onclick="goToScene('s2_hide')">Stay quiet — maybe they won't find it</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATH C2: DISCLOSE -->
+        <div class="scene" id="s2_disclose">
+            <div class="card">
+                <span class="badge neutral">Damage control</span>
+                <h2>Cooperation</h2>
+                <div class="narrative">
+                    <p>You forward your fairness report to Legal immediately.</p>
+                    <p>The General Counsel is furious this wasn't raised earlier, but appreciates your cooperation. "Your documentation helps us — it shows internal identification. The question is why nothing was done."</p>
+                    <p>NovaCred enters a consent agreement: £2.1 million fine, mandatory audits, review of all prior decisions. You keep your job but are removed from the project.</p>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('end_poor')">Continue to outcome</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATH C2: HIDE -->
+        <div class="scene" id="s2_hide">
+            <div class="card">
+                <span class="badge negative">Obstruction</span>
+                <h2>The Investigation</h2>
+                <div class="narrative">
+                    <p>You say nothing, hoping investigators won't dig deep enough.</p>
+                    <p>Within two weeks, they find your fairness analysis in the appendix. Email metadata shows you ran it weeks before deployment — proof you knew.</p>
+                    <p>The report notes: "Evidence suggests deliberate concealment, constituting breach of FCA Principle 11 and potential EU AI Act Article 9 violation."</p>
+                    <p>Fine: £8.5 million. You are personally referred for potential prohibition from financial services.</p>
+                </div>
+
+                <div class="choices">
+                    <button class="choice-btn" onclick="goToScene('end_worst')">Continue to outcome</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ENDINGS ==================== -->
+
+        <!-- BEST ENDING -->
+        <div class="scene" id="end_best">
+            <div class="card">
+                <span class="ending-badge best">Ethical Leadership</span>
+                <h2>Outcome</h2>
+
+                <div class="score-display">
+                    <div class="score-number">95</div>
+                    <div class="score-label">Exemplary Practice</div>
+                </div>
+
+                <p>By standing firm against executive pressure, you demonstrated that ethical principles aren't negotiable — even when millions are at stake. The delay cost NovaCred short-term, but built long-term credibility.</p>
+                <p>CreditVision becomes a case study in responsible AI. You're promoted to Head of Responsible AI and speak at industry conferences about navigating ethical pressure in tech.</p>
+
+                <div class="stat-grid">
+                    <div class="stat"><div class="stat-label">Transparency</div><div class="stat-value good">Excellent</div></div>
+                    <div class="stat"><div class="stat-label">Fairness</div><div class="stat-value good">Excellent</div></div>
+                    <div class="stat"><div class="stat-label">Accountability</div><div class="stat-value good">Full</div></div>
+                    <div class="stat"><div class="stat-label">Compliance</div><div class="stat-value good">Complete</div></div>
+                </div>
+
+                <div class="reflection">
+                    <h3>Reflection</h3>
+                    <ul>
+                        <li>What gave you confidence to push back against the CEO?</li>
+                        <li>How might this have gone differently without supportive middle management?</li>
+                        <li>What organisational structures help employees raise ethical concerns?</li>
+                    </ul>
+                </div>
+
+                <div class="btn-group">
+                    <button class="choice-btn restart-btn" onclick="restart()">Play again</button>
+                    <button class="choice-btn share-btn" onclick="shareResult('end_best')">Share result</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEGOTIATED ENDING -->
+        <div class="scene" id="end_negotiated">
+            <div class="card">
+                <span class="ending-badge good">Principled Negotiator</span>
+                <h2>Outcome</h2>
+
+                <div class="score-display">
+                    <div class="score-number">88</div>
+                    <div class="score-label">Strong Practice</div>
+                </div>
+
+                <p>Your counter-proposal balanced ethical requirements with business reality. The external audit caught two additional issues your team had missed and provided investor confidence.</p>
+                <p>The board presentation was tough — hard questions about why this wasn't caught earlier — but your transparency earned respect. CreditVision launched on time with proper safeguards.</p>
+                <p>Kiana later told you: "I hired you to tell me things I don't want to hear. Keep doing that."</p>
+
+                <div class="stat-grid">
+                    <div class="stat"><div class="stat-label">Transparency</div><div class="stat-value good">Excellent</div></div>
+                    <div class="stat"><div class="stat-label">Fairness</div><div class="stat-value good">Good</div></div>
+                    <div class="stat"><div class="stat-label">Accountability</div><div class="stat-value good">Strong</div></div>
+                    <div class="stat"><div class="stat-label">Compliance</div><div class="stat-value good">Verified</div></div>
+                </div>
+
+                <div class="reflection">
+                    <h3>Reflection</h3>
+                    <ul>
+                        <li>When is compromise appropriate in ethical decisions?</li>
+                        <li>How did external validation change the dynamic?</li>
+                        <li>What skills helped you negotiate effectively under pressure?</li>
+                    </ul>
+                </div>
+
+                <div class="btn-group">
+                    <button class="choice-btn restart-btn" onclick="restart()">Play again</button>
+                    <button class="choice-btn share-btn" onclick="shareResult('end_negotiated')">Share result</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRAGMATIC ENDING -->
+        <div class="scene" id="end_pragmatic">
+            <div class="card">
+                <span class="ending-badge mixed">Reputational Damage</span>
+                <h2>Outcome</h2>
+
+                <div class="score-display">
+                    <div class="score-number">62</div>
+                    <div class="score-label">Mixed Results</div>
+                </div>
+
+                <p>The phased approach seemed reasonable internally, but externally it looked like digital redlining. The story damaged NovaCred's reputation and raised questions about your judgment.</p>
+                <p>The full system eventually launched without issues, but the PR damage lingered. Some community groups still refuse to recommend NovaCred to their members.</p>
+                <p>You learned that optics matter as much as intent. A technically defensible decision can still be ethically problematic if it perpetuates historical patterns of exclusion.</p>
+
+                <div class="stat-grid">
+                    <div class="stat"><div class="stat-label">Transparency</div><div class="stat-value warn">Partial</div></div>
+                    <div class="stat"><div class="stat-label">Fairness</div><div class="stat-value warn">Questioned</div></div>
+                    <div class="stat"><div class="stat-label">Accountability</div><div class="stat-value good">Maintained</div></div>
+                    <div class="stat"><div class="stat-label">Compliance</div><div class="stat-value good">Met</div></div>
+                </div>
+
+                <div class="reflection">
+                    <h3>Reflection</h3>
+                    <ul>
+                        <li>Why did the phased approach feel acceptable internally but look bad externally?</li>
+                        <li>How should historical context inform current technical decisions?</li>
+                        <li>What stakeholders should have been consulted before this decision?</li>
+                    </ul>
+                </div>
+
+                <div class="btn-group">
+                    <button class="choice-btn restart-btn" onclick="restart()">Play again</button>
+                    <button class="choice-btn share-btn" onclick="shareResult('end_pragmatic')">Share result</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- COURSE CORRECT ENDING -->
+        <div class="scene" id="end_course_correct">
+            <div class="card">
+                <span class="ending-badge good">Responsible Recovery</span>
+                <h2>Outcome</h2>
+
+                <div class="score-display">
+                    <div class="score-number">75</div>
+                    <div class="score-label">Good Practice</div>
+                </div>
+
+                <p>By flagging the unintended harm from the fairness adjustment, you prevented a much larger problem. The rebuilt model achieves fairness through accuracy, not statistical manipulation.</p>
+                <p>The incident became an internal case study about the difference between "fairness theater" and genuine algorithmic fairness. Your willingness to admit the first approach was wrong earned respect.</p>
+
+                <div class="stat-grid">
+                    <div class="stat"><div class="stat-label">Transparency</div><div class="stat-value good">Good</div></div>
+                    <div class="stat"><div class="stat-label">Fairness</div><div class="stat-value good">Achieved</div></div>
+                    <div class="stat"><div class="stat-label">Accountability</div><div class="stat-value good">Demonstrated</div></div>
+                    <div class="stat"><div class="stat-label">Compliance</div><div class="stat-value good">Met</div></div>
+                </div>
+
+                <div class="reflection">
+                    <h3>Reflection</h3>
+                    <ul>
+                        <li>Why did the initial "fairness adjustment" seem like a good idea?</li>
+                        <li>What's the difference between statistical fairness and substantive fairness?</li>
+                        <li>How do we measure whether an AI system is truly fair?</li>
+                    </ul>
+                </div>
+
+                <div class="btn-group">
+                    <button class="choice-btn restart-btn" onclick="restart()">Play again</button>
+                    <button class="choice-btn share-btn" onclick="shareResult('end_course_correct')">Share result</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPLICIT ENDING -->
+        <div class="scene" id="end_complicit">
+            <div class="card">
+                <span class="ending-badge bad">Complicity</span>
+                <h2>Outcome</h2>
+
+                <div class="score-display">
+                    <div class="score-number">25</div>
+                    <div class="score-label">Serious Failure</div>
+                </div>
+
+                <p>You saw evidence of harm and chose to ignore it. That's not a mistake — it's a decision. The investigation revealed your earlier analysis, proving you knew the adjustment was causing problems.</p>
+                <p>The FCA fine exceeds £5 million. NovaCred's board demands accountability. You're terminated for cause, with the investigation findings becoming part of your professional record.</p>
+                <p>Hundreds of borrowers are now in debt they can't afford because of a system you helped deploy and failed to fix.</p>
+
+                <div class="stat-grid">
+                    <div class="stat"><div class="stat-label">Transparency</div><div class="stat-value bad">Failed</div></div>
+                    <div class="stat"><div class="stat-label">Fairness</div><div class="stat-value bad">Harmful</div></div>
+                    <div class="stat"><div class="stat-label">Accountability</div><div class="stat-value bad">Evaded</div></div>
+                    <div class="stat"><div class="stat-label">Compliance</div><div class="stat-value bad">Violated</div></div>
+                </div>
+
+                <div class="reflection">
+                    <h3>Reflection</h3>
+                    <ul>
+                        <li>What rationalisations made it easier to ignore the warning signs?</li>
+                        <li>At what point does inaction become complicity?</li>
+                        <li>How do organisational pressures enable ethical failures?</li>
+                    </ul>
+                </div>
+
+                <div class="btn-group">
+                    <button class="choice-btn restart-btn" onclick="restart()">Play again</button>
+                    <button class="choice-btn share-btn" onclick="shareResult('end_complicit')">Share result</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GOOD ENDING -->
+        <div class="scene" id="end_good">
+            <div class="card">
+                <span class="ending-badge good">Honest Recovery</span>
+                <h2>Outcome</h2>
+
+                <div class="score-display">
+                    <div class="score-number">78</div>
+                    <div class="score-label">Good Practice</div>
+                </div>
+
+                <p>You made a mistake with the midnight fix, but coming clean was the right call. The formal warning stings, but your integrity remains intact.</p>
+                <p>Jamie becomes a trusted ally, and together you implement proper model governance processes. CreditVision launches with safeguards that become company standard.</p>
+
+                <div class="stat-grid">
+                    <div class="stat"><div class="stat-label">Transparency</div><div class="stat-value good">Restored</div></div>
+                    <div class="stat"><div class="stat-label">Fairness</div><div class="stat-value good">Good</div></div>
+                    <div class="stat"><div class="stat-label">Accountability</div><div class="stat-value good">Achieved</div></div>
+                    <div class="stat"><div class="stat-label">Compliance</div><div class="stat-value good">Met</div></div>
+                </div>
+
+                <div class="reflection">
+                    <h3>Reflection</h3>
+                    <ul>
+                        <li>What drove the initial impulse to fix things secretly?</li>
+                        <li>How did coming clean change your relationship with colleagues?</li>
+                        <li>What processes could prevent similar panic decisions?</li>
+                    </ul>
+                </div>
+
+                <div class="btn-group">
+                    <button class="choice-btn restart-btn" onclick="restart()">Play again</button>
+                    <button class="choice-btn share-btn" onclick="shareResult('end_good')">Share result</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- POOR ENDING -->
+        <div class="scene" id="end_poor">
+            <div class="card">
+                <span class="ending-badge mixed">Costly Lesson</span>
+                <h2>Outcome</h2>
+
+                <div class="score-display">
+                    <div class="score-number">40</div>
+                    <div class="score-label">Significant Failures</div>
+                </div>
+
+                <p>Late cooperation limited damage, but thousands were unfairly denied loans before the issue was addressed. The £2.1 million fine comes with mandatory remediation.</p>
+                <p>You kept your job but lost colleagues' trust. The incident taught you that ethical concerns must be raised immediately — not documented and buried.</p>
+
+                <div class="stat-grid">
+                    <div class="stat"><div class="stat-label">Transparency</div><div class="stat-value bad">Failed</div></div>
+                    <div class="stat"><div class="stat-label">Fairness</div><div class="stat-value bad">Failed</div></div>
+                    <div class="stat"><div class="stat-label">Accountability</div><div class="stat-value warn">Late</div></div>
+                    <div class="stat"><div class="stat-label">Compliance</div><div class="stat-value bad">Violated</div></div>
+                </div>
+
+                <div class="reflection">
+                    <h3>Reflection</h3>
+                    <ul>
+                        <li>What pressures led to documenting but not escalating?</li>
+                        <li>How does psychological safety affect ethical reporting?</li>
+                        <li>What would genuine accountability look like here?</li>
+                    </ul>
+                </div>
+
+                <div class="btn-group">
+                    <button class="choice-btn restart-btn" onclick="restart()">Play again</button>
+                    <button class="choice-btn share-btn" onclick="shareResult('end_poor')">Share result</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BAD ENDING -->
+        <div class="scene" id="end_bad">
+            <div class="card">
+                <span class="ending-badge bad">Career Derailed</span>
+                <h2>Outcome</h2>
+
+                <div class="score-display">
+                    <div class="score-number">20</div>
+                    <div class="score-label">Serious Violations</div>
+                </div>
+
+                <p>The cover-up created evidence of intent. Version logs showing your midnight retrain and revert prove you knew about the bias and chose to deploy anyway.</p>
+                <p>Class action lawsuit. Administrative leave. Your name appears in legal filings as the engineer who identified and then concealed discriminatory outcomes.</p>
+
+                <div class="stat-grid">
+                    <div class="stat"><div class="stat-label">Transparency</div><div class="stat-value bad">None</div></div>
+                    <div class="stat"><div class="stat-label">Fairness</div><div class="stat-value bad">Ignored</div></div>
+                    <div class="stat"><div class="stat-label">Accountability</div><div class="stat-value bad">Evaded</div></div>
+                    <div class="stat"><div class="stat-label">Compliance</div><div class="stat-value bad">Violated</div></div>
+                </div>
+
+                <div class="reflection">
+                    <h3>Reflection</h3>
+                    <ul>
+                        <li>What made the "quick fix" seem attractive despite risks?</li>
+                        <li>How do audit trails protect both organisations and individuals?</li>
+                        <li>What support might have led to better choices?</li>
+                    </ul>
+                </div>
+
+                <div class="btn-group">
+                    <button class="choice-btn restart-btn" onclick="restart()">Play again</button>
+                    <button class="choice-btn share-btn" onclick="shareResult('end_bad')">Share result</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- WORST ENDING -->
+        <div class="scene" id="end_worst">
+            <div class="card">
+                <span class="ending-badge bad">Professional Ruin</span>
+                <h2>Outcome</h2>
+
+                <div class="score-display">
+                    <div class="score-number">5</div>
+                    <div class="score-label">Complete Failure</div>
+                </div>
+
+                <p>Deploying known bias then hiding it from regulators constitutes fraud. £8.5 million fine. Personal referral for prohibition from financial services. Career over.</p>
+                <p>Thousands of minority applicants were denied fair access to credit. Lost opportunities for homes, businesses, emergency funds. The human cost is immeasurable.</p>
+
+                <div class="stat-grid">
+                    <div class="stat"><div class="stat-label">Transparency</div><div class="stat-value bad">Deceptive</div></div>
+                    <div class="stat"><div class="stat-label">Fairness</div><div class="stat-value bad">Harmful</div></div>
+                    <div class="stat"><div class="stat-label">Accountability</div><div class="stat-value bad">Criminal</div></div>
+                    <div class="stat"><div class="stat-label">Compliance</div><div class="stat-value bad">Fraud</div></div>
+                </div>
+
+                <div class="reflection">
+                    <h3>Reflection</h3>
+                    <ul>
+                        <li>At what point did this path become unrecoverable?</li>
+                        <li>How do small compromises lead to catastrophic outcomes?</li>
+                        <li>What organisational changes could prevent this?</li>
+                    </ul>
+                </div>
+
+                <div class="btn-group">
+                    <button class="choice-btn restart-btn" onclick="restart()">Play again</button>
+                    <button class="choice-btn share-btn" onclick="shareResult('end_worst')">Share result</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- REFERENCES -->
+        <div class="references" id="refs">
+            <h2>References</h2>
+            <p class="ref-item">Blattner, L. and Nelson, S. (2021) 'How costly is noise? Data and disparities in consumer credit', <em>Stanford Institute for Economic Policy Research Working Paper</em>.</p>
+            <p class="ref-item">Brookings Institution (2024) <em>Reducing bias in AI-based financial services</em>. Available at: brookings.edu (Accessed: 8 December 2025).</p>
+            <p class="ref-item">European Union (2024) <em>Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence</em>. Official Journal of the European Union.</p>
+            <p class="ref-item">Fuster, A. et al. (2022) 'Predictably unequal? The effects of machine learning on credit markets', <em>The Journal of Finance</em>, 77(1), pp. 5-47.</p>
+            <p class="ref-item">Kozodoi, N., Jacob, J. and Lessmann, S. (2022) 'Fairness in credit scoring: Assessment, implementation and profit implications', <em>European Journal of Operational Research</em>, 297(3), pp. 1083-1094.</p>
+        </div>
+
+        <footer>
+            <p>Antony O'Neill | #2418521 | St Mary's University</p>
+            <p style="margin-top: 8px;"><a href="https://aoneill.co.uk">aoneill.co.uk</a></p>
+        </footer>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal-overlay" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share Your Result</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="share-card-preview">
+                <canvas id="shareCanvas" width="600" height="400"></canvas>
+            </div>
+            <div class="share-actions">
+                <button class="download-btn" onclick="downloadCard()">Download Image</button>
+                <button class="copy-btn" id="copyBtn" onclick="copyCard()">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScene = 'intro';
+        let progress = 0;
+        const totalSteps = 6;
+        let playerName = '';
+
+        // Load saved name on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedName = localStorage.getItem('creditAlgorithmPlayerName');
+            if (savedName) {
+                document.getElementById('playerName').value = savedName;
+                playerName = savedName;
+            }
+        });
+
+        function startScenario() {
+            const nameInput = document.getElementById('playerName').value.trim();
+            playerName = nameInput || '';
+            if (playerName) {
+                localStorage.setItem('creditAlgorithmPlayerName', playerName);
+            }
+            goToScene('scene1');
+        }
+
+        function goToScene(id) {
+            document.getElementById(currentScene).classList.remove('active');
+            document.getElementById(id).classList.add('active');
+            currentScene = id;
+
+            progress = Math.min(progress + (100 / totalSteps), 100);
+            document.getElementById('progress').style.width = progress + '%';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function restart() {
+            document.getElementById(currentScene).classList.remove('active');
+            document.getElementById('intro').classList.add('active');
+            currentScene = 'intro';
+            progress = 0;
+            document.getElementById('progress').style.width = '0%';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Share card functionality
+        const endings = {
+            end_best: { title: 'Ethical Leadership', score: 95, label: 'Exemplary Practice', color: '#10b981' },
+            end_negotiated: { title: 'Principled Negotiator', score: 88, label: 'Strong Practice', color: '#6366f1' },
+            end_good: { title: 'Honest Recovery', score: 78, label: 'Good Practice', color: '#6366f1' },
+            end_course_correct: { title: 'Responsible Recovery', score: 75, label: 'Good Practice', color: '#6366f1' },
+            end_pragmatic: { title: 'Reputational Damage', score: 62, label: 'Mixed Results', color: '#f59e0b' },
+            end_poor: { title: 'Costly Lesson', score: 40, label: 'Significant Failures', color: '#f59e0b' },
+            end_complicit: { title: 'Complicity', score: 25, label: 'Serious Failure', color: '#ef4444' },
+            end_bad: { title: 'Career Derailed', score: 20, label: 'Serious Violations', color: '#ef4444' },
+            end_worst: { title: 'Professional Ruin', score: 5, label: 'Complete Failure', color: '#ef4444' }
+        };
+
+        function generateCard(endingId) {
+            const canvas = document.getElementById('shareCanvas');
+            const ctx = canvas.getContext('2d');
+            const ending = endings[endingId];
+
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 600, 400);
+            gradient.addColorStop(0, '#0a0a0f');
+            gradient.addColorStop(1, '#1a1a24');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 600, 400);
+
+            // Decorative circles
+            ctx.beginPath();
+            ctx.arc(50, 50, 150, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.1)';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(550, 350, 120, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+            ctx.fill();
+
+            // Header
+            ctx.fillStyle = '#6366f1';
+            ctx.font = '500 12px "Space Grotesk", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('THE CREDIT ALGORITHM', 40, 45);
+
+            // Player name (if provided)
+            if (playerName) {
+                ctx.fillStyle = '#f1f5f9';
+                ctx.font = '600 16px "Space Grotesk", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(playerName, 300, 80);
+            }
+
+            // Score circle
+            const scoreY = playerName ? 170 : 160;
+            ctx.beginPath();
+            ctx.arc(300, scoreY, 65, 0, Math.PI * 2);
+            ctx.strokeStyle = ending.color;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Score text
+            ctx.fillStyle = ending.color;
+            ctx.font = 'bold 44px "Space Grotesk", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(ending.score, 300, scoreY + 15);
+
+            // Label
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '13px "Space Grotesk", sans-serif';
+            ctx.fillText(ending.label, 300, scoreY + 45);
+
+            // Ending title
+            ctx.fillStyle = '#f1f5f9';
+            ctx.font = 'bold 26px "Space Grotesk", sans-serif';
+            ctx.fillText(ending.title, 300, scoreY + 100);
+
+            // Divider line
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(150, 320);
+            ctx.lineTo(450, 320);
+            ctx.stroke();
+
+            // Footer
+            ctx.fillStyle = '#64748b';
+            ctx.font = '13px "Space Grotesk", sans-serif';
+            ctx.fillText('AI Ethics Interactive Scenario', 300, 350);
+            ctx.fillStyle = '#818cf8';
+            ctx.font = '12px "Space Grotesk", sans-serif';
+            ctx.fillText('aoneill.co.uk', 300, 375);
+        }
+
+        function shareResult(endingId) {
+            generateCard(endingId);
+            document.getElementById('shareModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('shareModal').classList.remove('active');
+        }
+
+        function downloadCard() {
+            const canvas = document.getElementById('shareCanvas');
+            const link = document.createElement('a');
+            link.download = 'credit-algorithm-result.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        async function copyCard() {
+            const canvas = document.getElementById('shareCanvas');
+            const copyBtn = document.getElementById('copyBtn');
+
+            try {
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': blob })
+                ]);
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy to Clipboard';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                // Fallback for browsers that don't support clipboard API
+                copyBtn.textContent = 'Use Download';
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy to Clipboard';
+                }, 2000);
+            }
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('shareModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
