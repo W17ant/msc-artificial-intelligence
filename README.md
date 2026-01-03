@@ -1,96 +1,128 @@
-# MSc Artificial Intelligence Projects
+# MSc Artificial Intelligence - Coursework Portfolio
 
-Machine learning and AI projects developed during my MSc Computer Science with Artificial Intelligence at St Mary's University.
+**Antony O'Neill** | St Mary's University, Twickenham | 2024-2025
 
-## Projects
-
-### 1. CNN Image Classification (CIFAR-10)
-**File:** `CNN_CIFAR10_CLEAN.ipynb`
-
-Convolutional Neural Network for classifying images from the CIFAR-10 dataset (10 classes: airplane, automobile, bird, cat, deer, dog, frog, horse, ship, truck).
-
-**Architecture:**
-- 3 Convolutional blocks with BatchNormalization
-- MaxPooling layers
-- Dense layers with Dropout regularization
-- ~170K trainable parameters
-
-**Results:**
-- Test Accuracy: **71.33%**
-- Training: 20 epochs with Adam optimizer (lr=0.0001)
-
-**Technologies:** TensorFlow, Keras, NumPy, Matplotlib
+A collection of machine learning projects, practicals, and assessments from my MSc Computer Science with Artificial Intelligence degree.
 
 ---
 
-### 2. Deep Q-Network (CartPole)
-**File:** `DQN_CartPole.ipynb`
+## Repository Structure
 
-Reinforcement learning agent trained to balance a pole on a cart using Deep Q-Learning.
-
-**Key Concepts:**
-- Experience Replay with ReplayMemory buffer
-- Target Network for stable learning
-- Epsilon-greedy action selection with decay
-- Soft updates (TAU=0.005)
-
-**Hyperparameters:**
-- Batch Size: 128
-- Gamma (discount): 0.99
-- Learning Rate: 1e-4
-- Episodes: 600
-
-**Results:**
-- Max Reward: 283
-- Average (last 100 episodes): ~109
-
-**Technologies:** PyTorch, Gymnasium (OpenAI Gym), NumPy
+```
+msc-artificial-intelligence/
+├── assessments/          # Graded coursework
+│   ├── snake-rl/        # Deep Q-Learning Snake Agent (Final Assessment)
+│   └── heart-disease/   # Heart Disease Classification (Mid-Module)
+├── practicals/          # Hands-on learning exercises
+│   ├── classification/  # Bank Note Authentication
+│   ├── regression/      # House Price Prediction
+│   ├── neural-networks/ # MNIST Handwriting Recognition
+│   ├── cnn/            # CIFAR-10 Image Classification
+│   └── reinforcement-learning/ # CartPole DQN
+└── ethics/             # AI Ethics Interactive Game
+```
 
 ---
 
-### 3. Classification Fundamentals
-**File:** `CLASSIFICATION.ipynb`
+## Assessments
 
-Foundational classification techniques and algorithms.
+### [Deep Q-Learning Snake Agent](./assessments/snake-rl/)
+**Final Assessment** | Python, PyTorch, Reinforcement Learning
 
-**Technologies:** Scikit-learn, Pandas, NumPy
+Reinforcement learning agent that learns to play Snake using a deep neural network with experience replay and epsilon-greedy exploration.
+
+- **Architecture:** 11 inputs → 256 hidden → 3 outputs (straight, left, right)
+- **Key Features:** Experience replay buffer (100K), Bellman equation updates, epsilon decay
+- **Experiments:** 12 configurations testing architecture depth, hidden layer width, memory sizes
+- **Results:** Consistent scores of 40+ after 200 training episodes
+
+### [Heart Disease Classification](./assessments/heart-disease/)
+**Mid-Module Assessment** | Python, scikit-learn, TensorFlow
+
+Binary classification comparing multiple ML approaches for predicting heart disease risk using the UCI Heart Disease dataset.
+
+- **Models Tested:** Random Forest (3 configs), SVM (3 configs), Neural Network (3 configs)
+- **Features:** 13 clinical variables including age, cholesterol, blood pressure, ECG results
+- **Best Result:** 85.25% accuracy with tuned Random Forest
+- **Analysis:** ROC curves, confusion matrices, feature importance ranking
 
 ---
 
-### 4. AI Ethics Interactive Game
-**File:** `ai-ethics-finance-scenario.html`
+## Practicals
 
-Interactive choose-your-own-adventure exploring ethical challenges in AI-powered credit scoring systems.
+Hands-on exercises covering core machine learning concepts:
 
-**Features:**
-- Branching narrative with ethical dilemmas
-- Framework scoring (Utilitarianism, Deontology, Virtue Ethics)
-- Shareable ending cards
+| Practical | Technique | Dataset | Key Learning |
+|-----------|-----------|---------|--------------|
+| [Classification](./practicals/classification/) | Logistic Regression, SVM, Decision Tree, Random Forest, KNN, Naive Bayes | Bank Note Authentication | Comparing 6 classifiers (SVM achieved 100%) |
+| [Regression](./practicals/regression/) | Deep Neural Network (5 layers) | KC House Prices (21K homes) | Neural network regression with MAE loss |
+| [Neural Networks](./practicals/neural-networks/) | Dense NN, CNN | MNIST (60K digits) | Image classification fundamentals |
+| [CNN](./practicals/cnn/) | Convolutional Neural Network | CIFAR-10 (10 classes) | 71.33% accuracy with BatchNorm & Dropout |
+| [Reinforcement Learning](./practicals/reinforcement-learning/) | Deep Q-Network | CartPole | Experience replay, target networks, epsilon-greedy |
 
-**Live Demo:** [Play the game](https://aoneill.co.uk/MSC/ai-ethics-finance-scenario.html)
+---
+
+## Ethics
+
+### [The Credit Algorithm](./ethics/ai-ethics-finance-scenario.html)
+Interactive fiction game exploring ethical challenges in AI-powered credit scoring systems.
+
+- **Format:** Choose-your-own-adventure with branching narratives
+- **Themes:** Algorithmic bias, transparency, fairness, accountability
+- **Features:** Framework scoring (Utilitarianism, Deontology, Virtue Ethics), shareable endings
+- **[Play Online](https://aoneill.co.uk/MSC/ai-ethics-finance-scenario.html)**
+
+---
+
+## Tech Stack
+
+**Languages & Frameworks**
+- Python, PyTorch, TensorFlow, Keras, scikit-learn
+
+**Data & Visualisation**
+- pandas, NumPy, Matplotlib, Seaborn
+
+**Tools**
+- Jupyter Notebooks, Git
 
 ---
 
 ## Setup
 
-### Requirements
 ```bash
-pip install tensorflow torch gymnasium scikit-learn pandas numpy matplotlib
-```
+# Clone repository
+git clone https://github.com/W17ant/msc-artificial-intelligence.git
+cd msc-artificial-intelligence
 
-### Running Notebooks
-```bash
+# Install dependencies
+pip install torch tensorflow scikit-learn pandas numpy matplotlib seaborn jupyter
+
+# Run notebooks
 jupyter notebook
 ```
+
+---
+
+## About
+
+This repository documents my progression through the AI module of my MSc:
+
+1. **Classification** - Understanding fundamental ML algorithms
+2. **Regression** - Neural networks for continuous prediction
+3. **Computer Vision** - CNNs for image classification
+4. **Reinforcement Learning** - Agents that learn from interaction
+
+For my full portfolio including web development and production projects, visit **[aoneill.co.uk](https://aoneill.co.uk)**
+
+---
 
 ## Author
 
 **Antony O'Neill**
-- MSc Computer Science with AI, St Mary's University
 - [Portfolio](https://aoneill.co.uk)
 - [GitHub](https://github.com/W17ant)
 - [LinkedIn](https://www.linkedin.com/in/antony-o-neill-96601a104/)
 
-## License
+---
 
-This project is for educational purposes as part of my MSc coursework.
+*MSc Computer Science with Artificial Intelligence - St Mary's University, Twickenham*
