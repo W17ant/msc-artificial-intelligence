@@ -121,7 +121,7 @@ For my full portfolio including web development and production projects, visit *
 **Antony O'Neill**
 - [Portfolio](https://aoneill.co.uk)
 - [GitHub](https://github.com/W17ant)
-- [LinkedIn](https://www.linkedin.com/in/antony-o-neill-96601a104/)
+- [LinkedIn](https://www.linkedin.com/in/AntonyONeillADL)
 
 ---
 
